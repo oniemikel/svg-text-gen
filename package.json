@@ -4,8 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev:api": "vercel dev",
-    "build": "tsc"
+    "build": "echo 'API-only project: no static build needed'",
+    "dev:api": "vercel dev --listen 3000"
   },
   "dependencies": {},
   "devDependencies": {
