@@ -1,9 +1,3 @@
 {
-    "version": 2,
-    "builds": [
-        { "src": "api/svg.ts", "use": "@vercel/node" }
-    ],
-    "routes": [
-        { "src": "/api/svg", "dest": "/api/svg.ts" }
-    ]
+  "version": 2
 }
