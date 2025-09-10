@@ -1,6 +1,6 @@
 // src/pages/api/svg.ts
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { generateSVG, LinearGradient } from "../../lib/generateSVG";
+import { generateSVG, LinearGradient, AnimationOptions } from "../../lib/generateSVG";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
     const {
@@ -19,7 +19,10 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         style = "",
         gradId,
         stops,
-        shapes
+        shapes,
+        animateType,
+        animateDuration = "1s",
+        animateRepeat = "indefinite"
     } = req.query;
 
     // linearGradient 配列生成
@@ -46,22 +49,29 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     // 複数行対応
     const formattedText = typeof text === "string" ? text.replace(/\\n/g, "\n") : undefined;
 
+    // アニメーションオプション
+    let animation: AnimationOptions | undefined = undefined;
+    if (typeof animateType === "string") {
+        animation = { type: animateType as AnimationOptions["type"], duration: String(animateDuration), repeat: String(animateRepeat) };
+    }
+
     const svg = generateSVG({
         text: formattedText,
-        fontSize: Number(fontSize),        // ← Numberに変換
+        fontSize: Number(fontSize),
         fill: String(fill),
         fontFamily: typeof fontFamily === "string" ? fontFamily : undefined,
         fontWeight: typeof fontWeight === "string" ? fontWeight : undefined,
         fontStyle: typeof fontStyle === "string" ? fontStyle : undefined,
         rotate: rotate ? Number(rotate) : undefined,
         background: typeof bg === "string" ? bg : undefined,
-        width: Number(width),             // ← Numberに変換
-        height: Number(height),           // ← Numberに変換
+        width: Number(width),
+        height: Number(height),
         xmlns: String(xmlns),
         viewBox: String(viewBox),
         style: String(style),
         linearGradients,
-        shapes: shapesArray
+        shapes: shapesArray,
+        animation
     });
 
     res.setHeader("Content-Type", "image/svg+xml");
