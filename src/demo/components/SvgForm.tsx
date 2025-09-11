@@ -1,5 +1,5 @@
 // src/demo/components/SvgForm.tsx
-import React, { useState } from "react";
+import React from "react";
 import FormField from "./FormField";
 
 export interface SvgFormValues {
@@ -41,7 +41,9 @@ const dominantBaselines = [
 
 const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     onChange({
@@ -57,9 +59,11 @@ const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
     <div style={{ padding: 10 }}>
       <FormField
         label="Text"
+        type="textarea"
         name="text"
         value={values.text}
         onChange={handleChange}
+        rows={6}
       />
       <FormField
         label="Font Size"

@@ -3,12 +3,15 @@ import React from "react";
 
 interface FormFieldProps {
   label: string;
-  type?: "text" | "number" | "select";
+  type?: "text" | "textarea" | "number" | "select";
   name: string;
   value: string | number;
   options?: string[]; // select用
+  rows?: number; // textarea用
   onChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => void;
 }
 
@@ -18,6 +21,7 @@ const FormField: React.FC<FormFieldProps> = ({
   name,
   value,
   options,
+  rows = 4,
   onChange,
 }) => {
   return (
@@ -32,6 +36,14 @@ const FormField: React.FC<FormFieldProps> = ({
               </option>
             ))}
           </select>
+        ) : type === "textarea" ? (
+          <textarea
+            name={name}
+            value={value}
+            rows={rows}
+            onChange={onChange}
+            style={{ width: "100%" }}
+          />
         ) : (
           <input type={type} name={name} value={value} onChange={onChange} />
         )}
