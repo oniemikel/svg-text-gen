@@ -26,6 +26,50 @@ export interface Animation {
     accumulate?: string;
 }
 
+export interface Pattern {
+    id: string;
+    width: number;
+    height: number;
+    patternUnits?: string; // "userSpaceOnUse" など
+    content: string;       // 中に <circle> や <rect> など
+}
+
+export interface ClipPath {
+    id: string;
+    content: string; // <circle> や <rect> など
+}
+
+export interface Filter {
+    id: string;
+    content: string; // <feGaussianBlur> など
+}
+
+export interface Circle {
+    cx: number;
+    cy: number;
+    r: number;
+    fill?: string;
+    stroke?: string;
+    strokeWidth?: number;
+}
+
+export interface Rect {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    fill?: string;
+    rx?: number;
+    ry?: number;
+}
+
+export interface Path {
+    d: string;
+    fill?: string;
+    stroke?: string;
+    strokeWidth?: number;
+}
+
 export interface SVGParams {
     width?: number;
     height?: number;
@@ -46,6 +90,13 @@ export interface SVGParams {
     gradientFillId?: string;
     shapes?: string[];
     animations?: Animation[]; // ★追加
+    patterns?: Pattern[];
+    clipPaths?: ClipPath[];
+    filters?: Filter[];
+    circles?: Circle[];
+    rects?: Rect[];
+    paths?: Path[];
+    extraElements?: string[]; // 完全自由に追加
 }
 
 export function generateSVG(params: SVGParams): string {
@@ -69,6 +120,13 @@ export function generateSVG(params: SVGParams): string {
         gradientFillId,
         shapes,
         animations,
+        patterns,
+        clipPaths,
+        filters,
+        circles,
+        rects,
+        paths,
+        extraElements
     } = params;
 
     // defs
@@ -110,6 +168,57 @@ export function generateSVG(params: SVGParams): string {
         </text>`;
     }
 
+    // patterns
+    if (patterns && patterns.length > 0) {
+        defs += patterns.map(p => `
+            <pattern id="${p.id}" width="${p.width}" height="${p.height}" patternUnits="${p.patternUnits ?? "userSpaceOnUse"}">
+                ${p.content}
+            </pattern>
+        `).join("");
+    }
+
+    // clipPaths
+    if (clipPaths && clipPaths.length > 0) {
+        defs += clipPaths.map(cp => `
+            <clipPath id="${cp.id}">
+                ${cp.content}
+            </clipPath>
+        `).join("");
+    }
+
+    // filters
+    if (filters && filters.length > 0) {
+        defs += filters.map(f => `
+            <filter id="${f.id}">
+                ${f.content}
+            </filter>
+        `).join("");
+    }
+
+    // circles
+    const circlesContent = circles?.map(c => `
+        <circle cx="${c.cx}" cy="${c.cy}" r="${c.r}" 
+            ${c.fill ? `fill="${c.fill}"` : ""} 
+            ${c.stroke ? `stroke="${c.stroke}"` : ""} 
+            ${c.strokeWidth ? `stroke-width="${c.strokeWidth}"` : ""} />
+    `).join("") ?? "";
+
+    // rects
+    const rectsContent = rects?.map(r => `
+        <rect x="${r.x}" y="${r.y}" width="${r.width}" height="${r.height}" 
+            ${r.fill ? `fill="${r.fill}"` : ""} 
+            ${r.rx ? `rx="${r.rx}"` : ""} 
+            ${r.ry ? `ry="${r.ry}"` : ""} />
+    `).join("") ?? "";
+
+    // paths
+    const pathsContent = paths?.map(p => `
+        <path d="${p.d}" 
+            ${p.fill ? `fill="${p.fill}"` : ""} 
+            ${p.stroke ? `stroke="${p.stroke}"` : ""} 
+            ${p.strokeWidth ? `stroke-width="${p.strokeWidth}"` : ""} />
+    `).join("") ?? "";
+
     const shapesContent = shapes?.join("") ?? "";
     const bgRect = background ? `<rect width="100%" height="100%" fill="${background}" />` : "";
 
@@ -118,5 +227,9 @@ export function generateSVG(params: SVGParams): string {
         ${bgRect}
         ${shapesContent}
         ${textElement}
+        ${circlesContent}
+        ${rectsContent}
+        ${pathsContent}
+        ${extraElements?.join("") ?? ""}
     </svg>`;
 }
