@@ -1,6 +1,6 @@
 // src/pages/api/svg.ts
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { generateSVG, LinearGradient, AnimationOptions } from "../../lib/generateSVG";
+import { generateSVG, LinearGradient, Animation } from "../../lib/generateSVG";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
     const {
@@ -20,22 +20,22 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         gradId,
         stops,
         shapes,
-        animateType,
-        animateDuration = "1s",
-        animateRepeat = "indefinite"
+        animations
     } = req.query;
 
-    // linearGradient 配列生成
+    // linearGradient
     let linearGradients: LinearGradient[] | undefined = undefined;
+    let gradientFillId: string | undefined = undefined;
     if (gradId && typeof gradId === "string" && stops && typeof stops === "string") {
         const stopArray = stops.split(",").map(s => {
             const [offset, color] = s.split(":");
             return { offset, color };
         });
         linearGradients = [{ id: gradId, stops: stopArray }];
+        gradientFillId = gradId;
     }
 
-    // shapes 配列生成
+    // shapes
     let shapesArray: string[] | undefined = undefined;
     if (shapes && typeof shapes === "string") {
         try {
@@ -46,14 +46,18 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         }
     }
 
-    // 複数行対応
-    const formattedText = typeof text === "string" ? text.replace(/\\n/g, "\n") : undefined;
-
-    // アニメーションオプション
-    let animation: AnimationOptions | undefined = undefined;
-    if (typeof animateType === "string") {
-        animation = { type: animateType as AnimationOptions["type"], duration: String(animateDuration), repeat: String(animateRepeat) };
+    // animations
+    let animationsArray: Animation[] | undefined = undefined;
+    if (animations && typeof animations === "string") {
+        try {
+            const parsed = JSON.parse(animations);
+            if (Array.isArray(parsed)) animationsArray = parsed as Animation[];
+        } catch {
+            animationsArray = undefined;
+        }
     }
+
+    const formattedText = typeof text === "string" ? text.replace(/\\n/g, "\n") : undefined;
 
     const svg = generateSVG({
         text: formattedText,
@@ -70,8 +74,9 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
         viewBox: String(viewBox),
         style: String(style),
         linearGradients,
+        gradientFillId,
         shapes: shapesArray,
-        animation
+        animations: animationsArray
     });
 
     res.setHeader("Content-Type", "image/svg+xml");
