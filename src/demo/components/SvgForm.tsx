@@ -56,6 +56,10 @@ const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
     });
   };
 
+  const updateGradients = (updated: LinearGradient[]) => {
+    onChange({ ...values, linearGradients: updated });
+  };
+
   return (
     <div style={{ padding: 10 }}>
       <FormField
@@ -130,10 +134,15 @@ const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
         value={values.background ?? ""}
         onChange={handleChange}
       />
-      <LinearGradientEditor
-        gradients={values.linearGradients ?? []}
-        onChange={(grads) => onChange({ ...values, linearGradients: grads })}
-      />
+
+      <div style={{ marginBottom: 10 }}>
+        <strong>Linear Gradients</strong>
+        <LinearGradientEditor
+          gradients={values.linearGradients ?? []}
+          onChange={updateGradients}
+        />
+      </div>
+
       <FormField
         label="Gradient Fill ID"
         name="gradientFillId"

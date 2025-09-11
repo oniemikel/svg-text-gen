@@ -1,21 +1,28 @@
 .
 |-- src
-|   |-- components
-|   |   |-- FormField.tsx
-|   |   |-- SvgForm.tsx
-|   |   `-- SvgPreview.tsx
+|   |-- demo
+|   |   |-- components
+|   |   |   |-- FormField.tsx
+|   |   |   |-- LinearGradientEditor.tsx
+|   |   |   |-- SplitContainer.tsx
+|   |   |   |-- SvgForm.tsx
+|   |   |   `-- SvgPreview.tsx
+|   |   |-- App.tsx
+|   |   |-- index.html
+|   |   |-- index.tsx
+|   |   `-- main.tsx
 |   |-- lib
 |   |   `-- generateSVG.ts
-|   |-- pages
-|   |   `-- api
-|   |       `-- svg.ts
-|   `-- App.tsx
+|   `-- pages
+|       `-- api
+|           `-- svg.ts
 |-- LICENSE
 |-- README.md
 |-- package.json
 |-- pnpm-lock.yaml
 |-- tree.txt
 |-- tsconfig.json
-`-- vercel.json
+|-- vercel.json
+`-- vite.config.ts
 
-5 directories, 13 files
+6 directories, 19 files

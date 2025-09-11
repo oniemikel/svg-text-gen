@@ -1,7 +1,7 @@
 // src/demo/components/SvgPreview.tsx
 import React from "react";
 import { SvgFormValues } from "./SvgForm";
-import { generateSVG } from "../../lib/generateSVG";
+import { generateSVG } from "@/lib/generateSVG";
 
 interface SvgPreviewProps {
   values: SvgFormValues;

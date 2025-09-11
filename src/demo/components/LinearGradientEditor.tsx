@@ -1,130 +1,255 @@
-// src/demo/components/LinearGradientEditor.tsx
+// src/demo/components/SvgForm.tsx
 import React from "react";
-import { LinearGradient, GradientStop } from "@/lib/generateSVG";
-import FormField from "./FormField";
+import {
+  VStack,
+  Input,
+  Textarea,
+  Select,
+  NumberInput,
+  Box,
+} from "@chakra-ui/react";
+import { FormControl, FormLabel } from "@chakra-ui/form-control";
+import LinearGradientEditor from "./LinearGradientEditor";
+import { LinearGradient } from "../../lib/generateSVG";
 
-interface LinearGradientEditorProps {
-  gradients: LinearGradient[];
-  onChange: (gradients: LinearGradient[]) => void;
+export interface SvgFormValues {
+  text: string;
+  fontSize: number;
+  fill: string;
+  fontFamily: string;
+  fontWeight?: string;
+  fontStyle?: string;
+  textAnchor: string;
+  dominantBaseline: string;
+  rotate?: number;
+  background?: string;
+  linearGradients?: LinearGradient[];
+  gradientFillId?: string;
+  width?: number;
+  height?: number;
+  viewBox?: string;
+  xmlns?: string;
+  style?: string;
 }
 
-const LinearGradientEditor: React.FC<LinearGradientEditorProps> = ({
-  gradients,
-  onChange,
-}) => {
-  const handleGradientChange = (
-    index: number,
-    field: keyof LinearGradient,
-    value: any
+interface SvgFormProps {
+  values?: Partial<SvgFormValues>;
+  onChange: (values: SvgFormValues) => void;
+}
+
+const fontWeights = ["", "normal", "bold", "bolder", "lighter"];
+const fontStyles = ["", "normal", "italic", "oblique"];
+const textAnchors = ["start", "middle", "end"];
+const dominantBaselines = [
+  "auto",
+  "middle",
+  "hanging",
+  "text-bottom",
+  "alphabetic",
+];
+
+const defaultValues: SvgFormValues = {
+  text: "",
+  fontSize: 16,
+  fill: "#000000",
+  fontFamily: "Arial",
+  fontWeight: "normal",
+  fontStyle: "normal",
+  textAnchor: "start",
+  dominantBaseline: "auto",
+  rotate: 0,
+  background: "#ffffff",
+  linearGradients: [],
+  gradientFillId: "",
+  width: 200,
+  height: 100,
+  viewBox: "0 0 200 100",
+  xmlns: "http://www.w3.org/2000/svg",
+  style: "",
+};
+
+const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
+  const v: SvgFormValues = { ...defaultValues, ...values };
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
-    const newGradients = [...gradients];
-    newGradients[index] = { ...newGradients[index], [field]: value };
-    onChange(newGradients);
+    const { name, value } = e.target;
+    onChange({
+      ...v,
+      [name]:
+        ["fontSize", "rotate", "width", "height"].includes(name) && value !== ""
+          ? Number(value)
+          : value,
+    });
   };
 
-  const handleStopChange = (
-    gIndex: number,
-    sIndex: number,
-    field: keyof GradientStop,
-    value: any
-  ) => {
-    const newGradients = [...gradients];
-    const stops = [...newGradients[gIndex].stops];
-    stops[sIndex] = { ...stops[sIndex], [field]: value };
-    newGradients[gIndex].stops = stops;
-    onChange(newGradients);
+  const handleNumberChange = (name: keyof SvgFormValues, value: number) => {
+    onChange({
+      ...v,
+      [name]: value,
+    });
   };
 
-  const addGradient = () => {
-    onChange([
-      ...gradients,
-      {
-        id: `grad${gradients.length + 1}`,
-        stops: [
-          { offset: "0%", color: "#000" },
-          { offset: "100%", color: "#fff" },
-        ],
-      },
-    ]);
-  };
-
-  const addStop = (gIndex: number) => {
-    const newGradients = [...gradients];
-    newGradients[gIndex].stops.push({ offset: "100%", color: "#fff" });
-    onChange(newGradients);
+  const updateGradients = (updated: LinearGradient[]) => {
+    onChange({ ...v, linearGradients: updated });
   };
 
   return (
-    <div style={{ marginBottom: 10, border: "1px solid #ccc", padding: 10 }}>
-      <h4>Linear Gradients</h4>
-      {gradients.map((grad, gIdx) => (
-        <div
-          key={grad.id}
-          style={{ marginBottom: 10, padding: 5, border: "1px dashed #aaa" }}
+    <VStack spacing={4} align="stretch" p={4}>
+      <FormControl>
+        <FormLabel>Text</FormLabel>
+        <Textarea name="text" value={v.text} onChange={handleChange} rows={2} />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Font Size</FormLabel>
+        <NumberInput
+          value={v.fontSize}
+          onChange={(val) => handleNumberChange("fontSize", val)}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Fill Color</FormLabel>
+        <Input
+          type="color"
+          name="fill"
+          value={v.fill}
+          onChange={handleChange}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Font Family</FormLabel>
+        <Input name="fontFamily" value={v.fontFamily} onChange={handleChange} />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Font Weight</FormLabel>
+        <Select
+          name="fontWeight"
+          value={v.fontWeight ?? ""}
+          onChange={handleChange}
         >
-          <FormField
-            label="Gradient ID"
-            name="id"
-            value={grad.id}
-            onChange={(e) => handleGradientChange(gIdx, "id", e.target.value)}
-          />
-          <FormField
-            label="x1"
-            name="x1"
-            value={grad.x1 ?? "0%"}
-            onChange={(e) => handleGradientChange(gIdx, "x1", e.target.value)}
-          />
-          <FormField
-            label="y1"
-            name="y1"
-            value={grad.y1 ?? "0%"}
-            onChange={(e) => handleGradientChange(gIdx, "y1", e.target.value)}
-          />
-          <FormField
-            label="x2"
-            name="x2"
-            value={grad.x2 ?? "100%"}
-            onChange={(e) => handleGradientChange(gIdx, "x2", e.target.value)}
-          />
-          <FormField
-            label="y2"
-            name="y2"
-            value={grad.y2 ?? "0%"}
-            onChange={(e) => handleGradientChange(gIdx, "y2", e.target.value)}
-          />
-          <div style={{ marginLeft: 10 }}>
-            <h5>Stops</h5>
-            {grad.stops.map((stop, sIdx) => (
-              <div key={sIdx}>
-                <FormField
-                  label="Offset"
-                  name="offset"
-                  value={stop.offset}
-                  onChange={(e) =>
-                    handleStopChange(gIdx, sIdx, "offset", e.target.value)
-                  }
-                />
-                <FormField
-                  label="Color"
-                  name="color"
-                  value={stop.color}
-                  onChange={(e) =>
-                    handleStopChange(gIdx, sIdx, "color", e.target.value)
-                  }
-                />
-              </div>
-            ))}
-            <button type="button" onClick={() => addStop(gIdx)}>
-              Add Stop
-            </button>
-          </div>
-        </div>
-      ))}
-      <button type="button" onClick={addGradient}>
-        Add Gradient
-      </button>
-    </div>
+          {fontWeights.map((fw) => (
+            <option key={fw} value={fw}>
+              {fw || "None"}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Font Style</FormLabel>
+        <Select
+          name="fontStyle"
+          value={v.fontStyle ?? ""}
+          onChange={handleChange}
+        >
+          {fontStyles.map((fs) => (
+            <option key={fs} value={fs}>
+              {fs || "None"}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Text Anchor</FormLabel>
+        <Select name="textAnchor" value={v.textAnchor} onChange={handleChange}>
+          {textAnchors.map((ta) => (
+            <option key={ta} value={ta}>
+              {ta}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Dominant Baseline</FormLabel>
+        <Select
+          name="dominantBaseline"
+          value={v.dominantBaseline}
+          onChange={handleChange}
+        >
+          {dominantBaselines.map((db) => (
+            <option key={db} value={db}>
+              {db}
+            </option>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Rotate (deg)</FormLabel>
+        <NumberInput
+          value={v.rotate ?? 0}
+          onChange={(val) => handleNumberChange("rotate", val)}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Background</FormLabel>
+        <Input
+          type="color"
+          name="background"
+          value={v.background ?? "#ffffff"}
+          onChange={handleChange}
+        />
+      </FormControl>
+
+      <Box>
+        <FormLabel>Linear Gradients</FormLabel>
+        <LinearGradientEditor
+          gradients={v.linearGradients ?? []}
+          onChange={updateGradients}
+        />
+      </Box>
+
+      <FormControl>
+        <FormLabel>Gradient Fill ID</FormLabel>
+        <Input
+          name="gradientFillId"
+          value={v.gradientFillId ?? ""}
+          onChange={handleChange}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Width</FormLabel>
+        <NumberInput
+          value={v.width ?? 0}
+          onChange={(val) => handleNumberChange("width", val)}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Height</FormLabel>
+        <NumberInput
+          value={v.height ?? 0}
+          onChange={(val) => handleNumberChange("height", val)}
+        />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>ViewBox</FormLabel>
+        <Input name="viewBox" value={v.viewBox ?? ""} onChange={handleChange} />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>XMLNS</FormLabel>
+        <Input name="xmlns" value={v.xmlns ?? ""} onChange={handleChange} />
+      </FormControl>
+
+      <FormControl>
+        <FormLabel>Style</FormLabel>
+        <Input name="style" value={v.style ?? ""} onChange={handleChange} />
+      </FormControl>
+    </VStack>
   );
 };
 
-export default LinearGradientEditor;
+export default SvgForm;

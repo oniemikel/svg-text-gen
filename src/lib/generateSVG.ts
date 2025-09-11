@@ -1,16 +1,21 @@
 // src/lib/generateSVG.ts
 export interface GradientStop {
-    offset: string;
+    offset: number; // 0-100 の割合
     color: string;
     opacity?: number;
+    animate?: {
+        values: string;
+        dur: string;
+        repeatCount?: string;
+    };
 }
 
 export interface LinearGradient {
     id: string;
-    x1?: string;
-    y1?: string;
-    x2?: string;
-    y2?: string;
+    x1?: number;
+    y1?: number;
+    x2?: number;
+    y2?: number;
     stops: GradientStop[];
 }
 
@@ -117,7 +122,6 @@ export function generateSVG(params: SVGParams): string {
         dominantBaseline = "middle",
         rotate,
         linearGradients,
-        gradientFillId,
         shapes,
         animations,
         patterns,
@@ -133,8 +137,16 @@ export function generateSVG(params: SVGParams): string {
     let defs = "";
     if (linearGradients && linearGradients.length > 0) {
         defs = `<defs>${linearGradients.map(lg => `
-            <linearGradient id="${lg.id}" x1="${lg.x1 || "0%"}" y1="${lg.y1 || "0%"}" x2="${lg.x2 || "100%"}" y2="${lg.y2 || "0%"}">
-                ${lg.stops.map(stop => `<stop offset="${stop.offset}" style="stop-color:${stop.color};stop-opacity:${stop.opacity ?? 1}" />`).join("")}
+            <linearGradient id="${lg.id}" 
+                x1="${lg.x1 !== undefined ? lg.x1 + '%' : '0%'}" 
+                y1="${lg.y1 !== undefined ? lg.y1 + '%' : '0%'}" 
+                x2="${lg.x2 !== undefined ? lg.x2 + '%' : '100%'}" 
+                y2="${lg.y2 !== undefined ? lg.y2 + '%' : '0%'}">
+                ${lg.stops.map(stop => `
+                    <stop offset="${stop.offset}%" style="stop-color:${stop.color};stop-opacity:${stop.opacity ?? 1}">
+                        ${stop.animate ? `<animate attributeName="stop-color" values="${stop.animate.values}" dur="${stop.animate.dur}" repeatCount="${stop.animate.repeatCount ?? 'indefinite'}" />` : ''}
+                    </stop>
+                `).join("")}
             </linearGradient>
         `).join("")}</defs>`;
     }
@@ -155,14 +167,13 @@ export function generateSVG(params: SVGParams): string {
         textElement = `<text 
             x="50%" y="50%" 
             font-size="${fontSize}" 
-            fill="${gradientFillId ? `url(#${gradientFillId})` : fill}" 
+            fill="url(#${linearGradients && linearGradients.length > 0 ? linearGradients[0].id : ''})" 
             font-family="${fontFamily}" 
             ${fontWeight ? `font-weight="${fontWeight}"` : ""} 
             ${fontStyle ? `font-style="${fontStyle}"` : ""} 
             text-anchor="${textAnchor}" 
             dominant-baseline="${dominantBaseline}" 
-            ${rotate ? `transform="rotate(${rotate} ${width/2} ${height/2})"` : ""}
-        >
+            ${rotate ? `transform="rotate(${rotate} ${width/2} ${height/2})"` : ""}>
             ${lines.map((line, i) => `<tspan x="50%" dy="${i === 0 ? 0 : lineHeight}">${line}</tspan>`).join("")}
             ${animationTags}
         </text>`;
