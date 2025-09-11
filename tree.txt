@@ -1,0 +1,21 @@
+.
+|-- src
+|   |-- components
+|   |   |-- FormField.tsx
+|   |   |-- SvgForm.tsx
+|   |   `-- SvgPreview.tsx
+|   |-- lib
+|   |   `-- generateSVG.ts
+|   |-- pages
+|   |   `-- api
+|   |       `-- svg.ts
+|   `-- App.tsx
+|-- LICENSE
+|-- README.md
+|-- package.json
+|-- pnpm-lock.yaml
+|-- tree.txt
+|-- tsconfig.json
+`-- vercel.json
+
+5 directories, 13 files

@@ -1,15 +1,22 @@
 {
-  "name": "svg-api-server",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "scripts": {
-    "build": "echo 'API-only project: no static build needed'",
-    "dev:api": "vercel dev --listen 3000"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "typescript": "^5.3.3",
-    "@vercel/node": "^3.0.20"
-  }
+    "name": "svg-api-server",
+    "version": "1.0.0",
+    "license": "MIT",
+    "scripts": {
+        "dev:api": "vercel dev --listen 3000",
+        "dev": "vite --config vite.config.ts",
+        "build:demo": "vite build --config vite.config.ts"
+    },
+    "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0"
+    },
+    "devDependencies": {
+        "@types/react": "^19.1.12",
+        "@types/react-dom": "^19.1.9",
+        "@vercel/node": "^3.0.20",
+        "@vitejs/plugin-react": "^4.0.0",
+        "typescript": "^5.3.3",
+        "vite": "^5.0.0"
+    }
 }
