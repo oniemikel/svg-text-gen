@@ -1,23 +1,23 @@
 // src/demo/App.tsx
 import React, { useState } from "react";
-import SplitContainer from "./components/SplitContainer";
-import SvgForm, { SvgFormValues } from "./components/SvgForm";
-import SvgPreview from "./components/SvgPreview";
+import SplitContainer from "@/demo/components/SplitContainer";
+import SvgForm, { SvgFormValues } from "@/demo/components/SvgForm";
+import SvgPreview from "@/demo/components/SvgPreview";
 
-const initialValues: SvgFormValues = {
+const defaultValues: SvgFormValues = {
   text: "Hello SVG",
   fontSize: 40,
-  fill: "black",
+  fill: "#000000",
   fontFamily: "Arial, sans-serif",
   fontWeight: "normal",
   fontStyle: "normal",
   textAnchor: "middle",
   dominantBaseline: "middle",
   rotate: 0,
-  background: "",
-  linearGradients: "",
+  background: "#ffffff",
+  linearGradients: [],
   gradientFillId: "",
-  shapes: "",
+  shapes: [],
   width: 400,
   height: 200,
   viewBox: "0 0 400 200",
@@ -26,22 +26,26 @@ const initialValues: SvgFormValues = {
 };
 
 const App: React.FC = () => {
-  const [values, setValues] = useState<SvgFormValues>(initialValues);
+  const [values, setValues] = useState<SvgFormValues>(defaultValues);
 
-  const panes = [
-    {
-      content: <SvgForm values={values} onChange={setValues} />,
-      flex: 1,
-      minWidth: 300,
-    },
-    {
-      content: <SvgPreview values={values} />,
-      flex: 2,
-      minWidth: 300,
-    },
-  ];
-
-  return <SplitContainer panes={panes} gap={10} direction="row" />;
+  return (
+    <SplitContainer
+      direction="row"
+      gap={10}
+      panes={[
+        {
+          content: <SvgForm values={values} onChange={setValues} />,
+          flex: 1,
+          minWidth: 300,
+        },
+        {
+          content: <SvgPreview values={values} />,
+          flex: 1,
+          minWidth: 300,
+        },
+      ]}
+    />
+  );
 };
 
 export default App;

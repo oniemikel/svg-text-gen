@@ -1,7 +1,7 @@
 // src/demo/components/SvgPreview.tsx
 import React from "react";
 import { SvgFormValues } from "./SvgForm";
-import { generateSVG } from "@/lib/generateSVG";
+import { generateSVG } from "../../lib/generateSVG";
 
 interface SvgPreviewProps {
   values: SvgFormValues;
@@ -29,17 +29,7 @@ const SvgPreview: React.FC<SvgPreviewProps> = ({ values }) => {
     style,
   } = values;
 
-  // linearGradientsとshapesをJSON文字列から変換
-  let parsedGradients = undefined;
-  try {
-    if (linearGradients) parsedGradients = JSON.parse(linearGradients);
-  } catch {}
-
-  let parsedShapes = undefined;
-  try {
-    if (shapes) parsedShapes = JSON.parse(shapes);
-  } catch {}
-
+  // そのまま配列として渡す
   const svgString = generateSVG({
     text,
     fontSize,
@@ -51,9 +41,9 @@ const SvgPreview: React.FC<SvgPreviewProps> = ({ values }) => {
     dominantBaseline,
     rotate,
     background,
-    linearGradients: parsedGradients,
+    linearGradients,
     gradientFillId,
-    shapes: parsedShapes,
+    shapes,
     width,
     height,
     viewBox,
@@ -62,8 +52,18 @@ const SvgPreview: React.FC<SvgPreviewProps> = ({ values }) => {
   });
 
   return (
-    <div style={{ padding: 10 }}>
-      <div dangerouslySetInnerHTML={{ __html: svgString }} />
+    <div
+      style={{
+        padding: 10,
+        width: "100%",
+        height: "100%",
+        boxSizing: "border-box",
+      }}
+    >
+      <div
+        style={{ border: "1px solid #ccc", minHeight: 200 }}
+        dangerouslySetInnerHTML={{ __html: svgString }}
+      />
       <textarea
         readOnly
         value={svgString}

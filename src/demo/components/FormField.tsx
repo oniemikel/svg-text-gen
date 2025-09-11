@@ -21,7 +21,7 @@ const FormField: React.FC<FormFieldProps> = ({
   name,
   value,
   options,
-  rows = 4,
+  rows = 2,
   onChange,
 }) => {
   return (
@@ -37,13 +37,7 @@ const FormField: React.FC<FormFieldProps> = ({
             ))}
           </select>
         ) : type === "textarea" ? (
-          <textarea
-            name={name}
-            value={value}
-            rows={rows}
-            onChange={onChange}
-            style={{ width: "100%" }}
-          />
+          <textarea name={name} value={value} rows={rows} onChange={onChange} />
         ) : (
           <input type={type} name={name} value={value} onChange={onChange} />
         )}

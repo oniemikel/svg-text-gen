@@ -1,6 +1,8 @@
 // src/demo/components/SvgForm.tsx
 import React from "react";
 import FormField from "./FormField";
+import LinearGradientEditor from "./LinearGradientEditor";
+import { LinearGradient } from "../../lib/generateSVG";
 
 export interface SvgFormValues {
   text: string;
@@ -13,9 +15,8 @@ export interface SvgFormValues {
   dominantBaseline: string;
   rotate?: number;
   background?: string;
-  linearGradients?: string; // JSON文字列
+  linearGradients?: LinearGradient[];
   gradientFillId?: string;
-  shapes?: string; // JSON文字列
   width?: number;
   height?: number;
   viewBox?: string;
@@ -63,7 +64,7 @@ const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
         name="text"
         value={values.text}
         onChange={handleChange}
-        rows={6}
+        rows={2}
       />
       <FormField
         label="Font Size"
@@ -129,22 +130,14 @@ const SvgForm: React.FC<SvgFormProps> = ({ values, onChange }) => {
         value={values.background ?? ""}
         onChange={handleChange}
       />
-      <FormField
-        label="Linear Gradients (JSON)"
-        name="linearGradients"
-        value={values.linearGradients ?? ""}
-        onChange={handleChange}
+      <LinearGradientEditor
+        gradients={values.linearGradients ?? []}
+        onChange={(grads) => onChange({ ...values, linearGradients: grads })}
       />
       <FormField
         label="Gradient Fill ID"
         name="gradientFillId"
         value={values.gradientFillId ?? ""}
-        onChange={handleChange}
-      />
-      <FormField
-        label="Shapes (JSON Array)"
-        name="shapes"
-        value={values.shapes ?? ""}
         onChange={handleChange}
       />
       <FormField
