@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "bundler", // ← ここを変更
+    "moduleResolution": "bundler", // ← バンドラにしないと、モジュール解決ができない
     "skipDefaultLibCheck": true,
     "jsx": "react-jsx",
     "strict": true,
