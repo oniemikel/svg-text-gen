@@ -2,31 +2,11 @@
 import React from "react";
 import FormField from "./FormField";
 import LinearGradientEditor from "./LinearGradientEditor";
-import { LinearGradient } from "../../lib/generateSVG";
-
-export interface SvgFormValues {
-  text: string;
-  fontSize: number;
-  fill: string;
-  fontFamily: string;
-  fontWeight?: string;
-  fontStyle?: string;
-  textAnchor: string;
-  dominantBaseline: string;
-  rotate?: number;
-  background?: string;
-  linearGradients?: LinearGradient[];
-  gradientFillId?: string;
-  width?: number;
-  height?: number;
-  viewBox?: string;
-  xmlns?: string;
-  style?: string;
-}
+import { SvgParamsProps } from "@/lib/svgParams";
 
 interface SvgFormProps {
-  values: SvgFormValues;
-  onChange: (values: SvgFormValues) => void;
+  values: SvgParamsProps;
+  onChange: (values: SvgParamsProps) => void;
 }
 
 const fontWeights = ["", "normal", "bold", "bolder", "lighter"];

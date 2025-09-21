@@ -6,8 +6,8 @@ interface FormFieldProps {
   type?: "text" | "textarea" | "number" | "select";
   name: string;
   value: string | number;
-  options?: string[]; // select用
-  rows?: number; // textarea用
+  options?: string[]; // select 用
+  rows?: number; // textarea 用
   onChange: (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement

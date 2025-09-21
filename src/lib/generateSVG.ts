@@ -1,120 +1,22 @@
 // src/lib/generateSVG.ts
-export interface GradientStop {
-    offset: string;
-    color: string;
-    opacity?: number;
-}
+import { SvgParamsProps, SvgParamsDefaults } from './svgParams';
 
-export interface LinearGradient {
-    id: string;
-    x1?: string;
-    y1?: string;
-    x2?: string;
-    y2?: string;
-    stops: GradientStop[];
-}
-
-export interface Animation {
-    attributeName: string;  // 例: "x", "y", "fill", "opacity"
-    values?: string;        // 例: "0;50;0"
-    from?: string;
-    to?: string;
-    dur: string;            // 例: "2s"
-    repeatCount?: string;   // "indefinite" など
-    type?: string;          // animateTransform 用: "rotate" など
-    additive?: string;
-    accumulate?: string;
-}
-
-export interface Pattern {
-    id: string;
-    width: number;
-    height: number;
-    patternUnits?: string; // "userSpaceOnUse" など
-    content: string;       // 中に <circle> や <rect> など
-}
-
-export interface ClipPath {
-    id: string;
-    content: string; // <circle> や <rect> など
-}
-
-export interface Filter {
-    id: string;
-    content: string; // <feGaussianBlur> など
-}
-
-export interface Circle {
-    cx: number;
-    cy: number;
-    r: number;
-    fill?: string;
-    stroke?: string;
-    strokeWidth?: number;
-}
-
-export interface Rect {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    fill?: string;
-    rx?: number;
-    ry?: number;
-}
-
-export interface Path {
-    d: string;
-    fill?: string;
-    stroke?: string;
-    strokeWidth?: number;
-}
-
-export interface SVGParams {
-    width?: number;
-    height?: number;
-    viewBox?: string;
-    xmlns?: string;
-    style?: string;
-    background?: string;
-    text?: string;
-    fontSize?: number;
-    fill?: string;
-    fontFamily?: string;
-    fontWeight?: string;
-    fontStyle?: string;
-    textAnchor?: string;
-    dominantBaseline?: string;
-    rotate?: number;
-    linearGradients?: LinearGradient[];
-    gradientFillId?: string;
-    shapes?: string[];
-    animations?: Animation[]; // ★追加
-    patterns?: Pattern[];
-    clipPaths?: ClipPath[];
-    filters?: Filter[];
-    circles?: Circle[];
-    rects?: Rect[];
-    paths?: Path[];
-    extraElements?: string[]; // 完全自由に追加
-}
-
-export function generateSVG(params: SVGParams): string {
+export function generateSVG(params: SvgParamsProps): string {
     const {
-        width = 400,
-        height = 200,
-        viewBox = `0 0 ${width} ${height}`,
-        xmlns = "http://www.w3.org/2000/svg",
-        style = "",
+        width = SvgParamsDefaults.width,
+        height = SvgParamsDefaults.height,
+        viewBox = SvgParamsDefaults.viewBox,
+        xmlns = SvgParamsDefaults.xmlns,
+        style = SvgParamsDefaults.style,
         background,
         text,
-        fontSize = 40,
-        fill = "black",
-        fontFamily = "Arial, sans-serif",
+        fontSize = SvgParamsDefaults.fontSize,
+        fill = SvgParamsDefaults.fill,
+        fontFamily = SvgParamsDefaults.fontFamily,
         fontWeight,
         fontStyle,
-        textAnchor = "middle",
-        dominantBaseline = "middle",
+        textAnchor = SvgParamsDefaults.textAnchor,
+        dominantBaseline = SvgParamsDefaults.dominantBaseline,
         rotate,
         linearGradients,
         gradientFillId,
@@ -126,14 +28,14 @@ export function generateSVG(params: SVGParams): string {
         circles,
         rects,
         paths,
-        extraElements
+        extraElements,
     } = params;
 
     // defs
     let defs = "";
-    if (linearGradients && linearGradients.length > 0) {
-        defs = `<defs>${linearGradients.map(lg => `
-            <linearGradient id="${lg.id}" x1="${lg.x1 || "0%"}" y1="${lg.y1 || "0%"}" x2="${lg.x2 || "100%"}" y2="${lg.y2 || "0%"}">
+    if (linearGradients?.length) {
+        defs += `<defs>${linearGradients.map(lg => `
+            <linearGradient id="${lg.id}" x1="${lg.x1 ?? "0%"}" y1="${lg.y1 ?? "0%"}" x2="${lg.x2 ?? "100%"}" y2="${lg.y2 ?? "0%"}">
                 ${lg.stops.map(stop => `<stop offset="${stop.offset}" style="stop-color:${stop.color};stop-opacity:${stop.opacity ?? 1}" />`).join("")}
             </linearGradient>
         `).join("")}</defs>`;
@@ -169,7 +71,7 @@ export function generateSVG(params: SVGParams): string {
     }
 
     // patterns
-    if (patterns && patterns.length > 0) {
+    if (patterns?.length) {
         defs += patterns.map(p => `
             <pattern id="${p.id}" width="${p.width}" height="${p.height}" patternUnits="${p.patternUnits ?? "userSpaceOnUse"}">
                 ${p.content}
@@ -178,7 +80,7 @@ export function generateSVG(params: SVGParams): string {
     }
 
     // clipPaths
-    if (clipPaths && clipPaths.length > 0) {
+    if (clipPaths?.length) {
         defs += clipPaths.map(cp => `
             <clipPath id="${cp.id}">
                 ${cp.content}
@@ -187,7 +89,7 @@ export function generateSVG(params: SVGParams): string {
     }
 
     // filters
-    if (filters && filters.length > 0) {
+    if (filters?.length) {
         defs += filters.map(f => `
             <filter id="${f.id}">
                 ${f.content}

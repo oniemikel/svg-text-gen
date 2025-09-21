@@ -1,16 +1,18 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "nodenext",
-    "moduleResolution": "nodenext", // ← ここを変更
+    "module": "ESNext",
+    "moduleResolution": "bundler", // ← ここを変更
+    "skipDefaultLibCheck": true,
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"]
+      "@/*": ["src/*"],
+      "@chakra/*": ["src/demo/components/chakra/*"]
     }
   },
   "include": ["src"],
